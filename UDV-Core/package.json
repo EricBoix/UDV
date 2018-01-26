@@ -4,13 +4,13 @@
   "description": "An iTowns based set of overlay display modules for City exploration",
   "main": "src/Main.js",
   "scripts": {
-    "lint": "eslint \"src/**/*.js\" \"Main.js\" \"Setup3DScene.js\"",
+    "build": "webpack -p",
     "doc": "jsdoc Setup3DScene.js",
     "doclint": "npm run doc -- -t templates/silent",
-    "test": "npm run lint",
-    "build": "webpack -p",
-    "transpile": "cross-env BABEL_DISABLE_CACHE=1 babel src --out-dir lib",
+    "lint": "eslint \"src/**/*.js\" \"Main.js\" \"Setup3DScene.js\"",
     "start": "cross-env NODE_ENV=development webpack-dev-server -d --inline --hot",
+    "test": "tape ./test/*.test.js",
+    "transpile": "cross-env BABEL_DISABLE_CACHE=1 babel src --out-dir lib",
     "//": "\"prepublish\": \"npm run build && npm run transpile\""
   },
   "files": [
@@ -55,7 +55,9 @@
     "mocha": "^3.4.2",
     "node-fetch": "^1.7.0",
     "raw-loader": "^0.5.1",
+    "request": "^2.83.0",
     "require-from-string": "^1.2.1",
+    "tape": "^4.8.0",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5"
   }
