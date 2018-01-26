@@ -53,32 +53,31 @@ module.exports = {
     }],*/
     'import/no-extraneous-dependencies': 'off',
 
-    // TODO reactivate all the following rules
-
+    // TODO reactivate some the following rules
+    'brace-style': 'off',
+    'camelcase': 'off',
+    'consistent-return': 'off',
+    'eqeqeq': 'off',
+    'max-len': 'off', // what len ? Airbnb does 100. github wraps line above 80
+    'new-cap': 'off',
+    'no-bitwise': 'off',
+    'no-continue': 'off',
+    'no-multi-spaces': 'off',
+    'no-else-return': 'off',
     // maybe 'no-mixed-operators': ['error', { allowSamePrecedence: true }],
     'no-mixed-operators': 'off',
-    'no-use-before-define': 'off',
+    'no-multi-str': 'off',    // Multi-line strings are OK starting from ES5
+    'no-param-reassign': 'off',
+    'no-restricted-syntax': 'off',
+    'no-restricted-properties': 'off',
+    'no-shadow': 'off',
     // should probably be
     // 'no-underscore-dangle': ['error', { allowAfterThis: true, allowAfterSuper: true }],
     'no-underscore-dangle': 'off',
-    'eqeqeq': 'off',
-    // what len ? Airbnb does 100. github wraps line above 80
-    'max-len': 'off',
-    'no-param-reassign': 'off',
-    'no-else-return': 'off',
+    'no-use-before-define': 'off',
     'no-var': 'off',
-    'vars-on-top': 'off',
-    'no-shadow': 'off',
-    'no-restricted-properties': 'off',
     'prefer-spread': 'off',
-    'camelcase': 'off',
-    'no-bitwise': 'off',
-    'no-restricted-syntax': 'off',
-    'consistent-return': 'off',
-    'brace-style': 'off',
-    'new-cap': 'off',
-    'no-continue': 'off',
-    'no-multi-spaces': 'off'
+    'vars-on-top': 'off'
   },
   "globals": {
     "__DEBUG__": false

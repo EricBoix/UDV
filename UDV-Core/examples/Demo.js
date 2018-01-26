@@ -111,7 +111,7 @@ layer.whenReady.then(
       resultDates.sort();
       temporal.minTime = new moment( resultDates[0] );
       temporal.maxTime = new moment( resultDates[resultDates.length-1] );
-      temporal.changeTime( temporal.minTime );
+      temporal.changeTime(temporal.minTime);
       temporal.refresh();
     }
   }

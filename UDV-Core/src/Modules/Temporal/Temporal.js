@@ -1,4 +1,12 @@
-import 'moment'; // Note that "import * as moment from 'moment';" fails
+// FIXME
+//  - eslint stops complaining about "moment is not defined" when using
+//       "import {moment} from 'moment';"
+//     but then 3dTilesCulling trigger gobs of messages of the form
+//        Error: displayDate must be specified in 3d-tiles layer for
+//               using temporal extension.
+//  - 'import * as moment from 'moment';' fails
+// import {moment} from 'moment';
+import 'moment';
 
 /**
 * Constructor for TemporalController Class
@@ -12,14 +20,16 @@ import 'moment'; // Note that "import * as moment from 'moment';" fails
 * @param options : optional parameters (starting and ending times)
 */
 
-export function TemporalController(refreshCallback, options={}) {
-
-    ///////////// Html elements
-    var temporalDiv = document.createElement("div");
+// eslint requires the following line but then Demo.js cannot find the
+// TemporalController constructor...
+// export { TemporalController as default };
+export function TemporalController(refreshCallback, options = {}) {
+    // ------------ Html elements
+    var temporalDiv = document.createElement('div');
     temporalDiv.id = 'temporal';
     document.body.appendChild(temporalDiv);
 
-    document.getElementById("temporal").innerHTML =
+    document.getElementById('temporal').innerHTML =
     '<div id="temporalWindow">\
        <div id="timeSliderMinDate"></div>\
        <div id="timeSliderMaxDate"></div>\
@@ -31,14 +41,14 @@ export function TemporalController(refreshCallback, options={}) {
        <button id="timeCloseButton">Close</button>\
     </div>';
 
-    ///////////////// Associated stylesheet
+    // ------------ Associated stylesheet
     var link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('type', 'text/css');
     link.setAttribute('href', '/src/Modules/Temporal/Temporal.css');
     document.getElementsByTagName('head')[0].appendChild(link);
 
-    /////// Class attributes
+    // ------------ Class attributes
 
     // Whether the temporal sub window displaying controlling GUI elements
     // is currently displayed or not.
@@ -48,36 +58,36 @@ export function TemporalController(refreshCallback, options={}) {
     this.currentTime = options.startTime || new moment();
 
     // Minimum and maximum times that can be displayed by this occurence
-    this.minTime = options.minTime || new moment( "1700-01-01" );
-    this.maxTime = options.maxTime || new moment( "2020-01-01" );
+    this.minTime = options.minTime || new moment('1700-01-01');
+    this.maxTime = options.maxTime || new moment('2020-01-01');
 
     // The timestep used to increment or decrement time with the slide buttons.
-    // Note that timeStep is a "duration" as opposed to a timestamp.
+    // Note that timeStep is a 'duration' as opposed to a timestamp.
     this.timeStep = options.timeStep || new moment.duration(1, 'years');
 
     // A moment.format() is used to encode the current mode of display of the
     // represented times. For the time being we allow
-    //   - "YYYY"    to represent a display of times limited to their years
-    //   - "YYYY-MM" to represent a display of times limited to years
+    //   - 'YYYY'    to represent a display of times limited to their years
+    //   - 'YYYY-MM' to represent a display of times limited to years
     //     followed by the month of the year
-    this.timeFormat = options.timeFormat || "YYYY";
+    this.timeFormat = options.timeFormat || 'YYYY';
 
     // Whether temporal overlay (all CityObjects displayed independently from
     // their creation/destruction dates) is selected or not
     this.temporalUsesOverlay = false;
 
-    //////////////// Behavior
+    // -------------- Behavior
     // Toggle the overlay displaying option
-    this.toggleOverlayButton = function toggleOverlayButton(){
+    this.toggleOverlayButton = function toggleOverlayButton() {
         this.temporalUsesOverlay = !this.temporalUsesOverlay;
-    }
+    };
 
     // Call back on new user input with the date selector
-    this.timeSelection = function timeSelection(){
+    this.timeSelection = function timeSelection() {
         var date = new moment(
-               document.getElementById("timeDateSelector").value.toString() );
+               document.getElementById('timeDateSelector').value.toString());
 
-        if( date.isValid() ){
+        if (date.isValid()) {
             this.changeTime(date);
         }
     };
@@ -85,81 +95,80 @@ export function TemporalController(refreshCallback, options={}) {
     // Call back on new user input with the time slider
     this.timeSelectionSlider = function timeSelectionSlider() {
         var timeFromSlider = new moment(
-                      document.getElementById("timeSlider").value.toString() );
-
-        if( timeFromSlider.isValid() ){
-            this.changeTime( timeFromSlider );
+                      document.getElementById('timeSlider').value.toString());
+        if (timeFromSlider.isValid()) {
+            this.changeTime(timeFromSlider);
         }
     };
 
     // go to the next key date (next temporal version)
-    this.goToNextDate = function goToNextDate(){
-       if( this.currentTime >= this.maxTime ){ return; }
-       this.changeTime( this.currentTime.add( this.timeStep ) );
-    }
+    this.goToNextDate = function goToNextDate() {
+        if (this.currentTime >= this.maxTime) { return; }
+        this.changeTime(this.currentTime.add(this.timeStep));
+    };
 
     // go to the previous key date (previous temporal version)
-    this.goToPreviousDate = function goToPreviousDate(){
-       if( this.currentTime <= this.minTime ){ return; }
-       this.changeTime( this.currentTime.subtract(this.timeStep) );
-    }
+    this.goToPreviousDate = function goToPreviousDate() {
+        if (this.currentTime <= this.minTime) { return; }
+        this.changeTime(this.currentTime.subtract(this.timeStep));
+    };
 
     // change the current date and sync the temporal version to this new date
-    this.changeTime = function changeTime( time ){
-      if( ! time instanceof moment ) {
-        throw new Error('Temporal.changeTime requires a moment argument');
-      }
-      this.currentTime = time;
+    this.changeTime = function changeTime(time) {
+        if (!(time instanceof moment)) {
+            throw new Error('Temporal.changeTime requires a moment argument');
+        }
+        this.currentTime = new moment(time);  // Avoid sharing a reference
 
-      document.getElementById("timeSlider").value =
-                                                time.format( this.timeFormat );
-      document.getElementById("timeDateSelector").value =
-                                                time.format( 'YYYY-MM-DD' );
+        document.getElementById('timeSlider').value =
+                                                time.format(this.timeFormat);
+        document.getElementById('timeDateSelector').value =
+                                                time.format('YYYY-MM-DD');
 
-      // Eventually inform who it may concern (e.g. an associated iTowns layer)
-      // that the currentTime has changed:
-      refreshCallback( this.currentTime.toDate() );
-    }
+        // Eventually inform who it may concern (e.g. an associated iTowns
+        // layer) that the currentTime has changed:
+        refreshCallback(this.currentTime.toDate());
+    };
 
     // Display or hide this window
-    this.activateWindow = function activateWindow( active ){
+    this.activateWindow = function activateWindow(active) {
         if (typeof active != 'undefined') {
-          this.temporalIsActive = active;
+            this.temporalIsActive = active;
         }
-        document.getElementById( 'temporalWindow').style.display =
-                                 active ? "block" : "none";
-    }
+        document.getElementById('temporalWindow').style.display =
+                                 active ? 'block' : 'none';
+    };
 
-    this.refresh = function refresh( ){
-      this.activateWindow( this.temporalIsActive );
-      document.getElementById("timeDateSelector").value =
-                                   this.currentTime.format( 'YYYY-MM-DD' );
-      document.getElementById("timeSlider").min   =
-                                       this.minTime.format( this.timeFormat );
-      document.getElementById("timeSlider").max   =
-                                       this.maxTime.format( this.timeFormat );
-      document.getElementById("timeSlider").value =
-                                   this.currentTime.format( this.timeFormat );
-      document.getElementById("timeSliderMinDate").innerHTML =
-                                      this.minTime.format( this.timeFormat );
-      document.getElementById("timeSliderMaxDate").innerHTML =
-                                      this.maxTime.format( this.timeFormat );
-    }
+    this.refresh = function refresh() {
+        this.activateWindow(this.temporalIsActive);
+        document.getElementById('timeDateSelector').value =
+                                    this.currentTime.format('YYYY-MM-DD');
+        document.getElementById('timeSlider').min =
+                                        this.minTime.format(this.timeFormat);
+        document.getElementById('timeSlider').max =
+                                        this.maxTime.format(this.timeFormat);
+        document.getElementById('timeSlider').value =
+                                    this.currentTime.format(this.timeFormat);
+        document.getElementById('timeSliderMinDate').innerHTML =
+                                        this.minTime.format(this.timeFormat);
+        document.getElementById('timeSliderMaxDate').innerHTML =
+                                        this.maxTime.format(this.timeFormat);
+    };
 
     // Hook up the callbacks
-    document.getElementById("timeDateSelector").addEventListener(
+    document.getElementById('timeDateSelector').addEventListener(
                                 'input', this.timeSelection.bind(this), false);
-    document.getElementById("timeSlider").addEventListener(
+    document.getElementById('timeSlider').addEventListener(
                           'input', this.timeSelectionSlider.bind(this), false);
-    document.getElementById("timeOverlayButton").addEventListener(
+    document.getElementById('timeOverlayButton').addEventListener(
                       'mousedown', this.toggleOverlayButton.bind(this), false);
-    document.getElementById("timeNextButton").addEventListener(
+    document.getElementById('timeNextButton').addEventListener(
                              'mousedown', this.goToNextDate.bind(this), false);
-    document.getElementById("timePreviousButton").addEventListener(
+    document.getElementById('timePreviousButton').addEventListener(
                          'mousedown', this.goToPreviousDate.bind(this), false);
-    document.getElementById("timeCloseButton").addEventListener(
-                   'mousedown', this.activateWindow.bind(this, false ), false);
+    document.getElementById('timeCloseButton').addEventListener(
+                   'mousedown', this.activateWindow.bind(this, false), false);
 
-    ///////////// Initialization
-    this.refresh( );
+    // Initialization of displayed values
+    this.refresh();
 }
